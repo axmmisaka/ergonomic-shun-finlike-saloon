@@ -13,7 +13,7 @@ interface Props {
   onSubmitted: () => void;
 }
 
-// Authored by LLM, model unknown
+// Edited by LLM, model GPT-6
 export function ScorecardForm({ candidateName, onSubmitted }: Props) {
   const [candidate, setCandidate] = useState<CandidateSummary | null>(null);
   const [ratings, setRatings] = useState<Partial<Record<RatingField, Rating>>>({});
@@ -68,12 +68,15 @@ export function ScorecardForm({ candidateName, onSubmitted }: Props) {
       {back}
       <h1>Submit scorecard</h1>
       <p className="muted">
-        One scorecard for this interview. After you submit, you can read the others with the author hidden.
+        One scorecard for this interview.{" "}
+        {candidate.isHiringManager
+          ? "You can already read all submitted scorecards with author names."
+          : "After you submit, you can read the others with the author hidden."}
       </p>
       <div className="card">
         <h3>{candidate.name}</h3>
         <p className="muted">
-          {candidate.role} · {candidate.hiringManager} hires
+          {candidate.role} · {candidate.isHiringManager ? "You are the hiring manager" : `${candidate.hiringManager} hires`}
         </p>
       </div>
 

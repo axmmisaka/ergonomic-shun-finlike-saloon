@@ -165,3 +165,13 @@ it("shows failed candidate and scorecard reads", async () => {
   render(<ScorecardList candidateName="Noah Patel" />);
   expect(await screen.findByRole("alert")).toHaveTextContent("Service unavailable");
 });
+
+// Authored by LLM, model GPT-6
+it("explains existing named access when a hiring manager submits their own scorecard", async () => {
+  // Authored by LLM, model GPT-6
+  mockFetch(() => json({ ...managed, isAssigned: true }));
+  render(<ScorecardForm candidateName="Elena Voss" onSubmitted={vi.fn()} />);
+  expect(await screen.findByText(/You can already read all submitted scorecards with author names/)).toBeVisible();
+  expect(screen.getByText(/You are the hiring manager/)).toBeVisible();
+  expect(screen.queryByText(/After you submit, you can read the others with the author hidden/)).not.toBeInTheDocument();
+});
