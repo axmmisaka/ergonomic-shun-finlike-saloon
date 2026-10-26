@@ -1,0 +1,7 @@
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+coverage/
+# Personal interview-prep notes; not part of the submission.
+PRIVATE_NOTES.md
