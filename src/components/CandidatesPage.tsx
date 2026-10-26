@@ -58,7 +58,7 @@ export function CandidatesPage() {
   );
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 function ManagedCandidate({ candidate, onAssigned }: { candidate: CandidateSummary; onAssigned: () => void }) {
   const [assigning, setAssigning] = useState(false);
   const assignees = candidate.assignees ?? [];

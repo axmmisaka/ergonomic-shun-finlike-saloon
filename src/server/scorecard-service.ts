@@ -26,7 +26,7 @@ interface Access {
   ownScorecard: Scorecard | undefined;
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 function accessFor(repo: CsvRepository, viewer: User, candidate: Candidate): Access {
   return {
     candidate,
@@ -35,7 +35,7 @@ function accessFor(repo: CsvRepository, viewer: User, candidate: Candidate): Acc
   };
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 function requireAccess(repo: CsvRepository, viewer: User, candidateName: string): Access {
   const candidate = repo.getCandidate(candidateName);
   const access = candidate && accessFor(repo, viewer, candidate);
@@ -45,7 +45,7 @@ function requireAccess(repo: CsvRepository, viewer: User, candidateName: string)
   return access;
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 function toSummary(repo: CsvRepository, { candidate, isHiringManager, ownScorecard }: Access): CandidateSummary {
   return {
     name: candidate.name,
@@ -63,7 +63,7 @@ function toSummary(repo: CsvRepository, { candidate, isHiringManager, ownScoreca
   };
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function listVisibleCandidates(repo: CsvRepository, viewer: User): CandidateSummary[] {
   return repo
     .listCandidates()
@@ -72,12 +72,12 @@ export function listVisibleCandidates(repo: CsvRepository, viewer: User): Candid
     .map((access) => toSummary(repo, access));
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function getCandidate(repo: CsvRepository, viewer: User, candidateName: string): CandidateSummary {
   return toSummary(repo, requireAccess(repo, viewer, candidateName));
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function createCandidate(
   repo: CsvRepository,
   viewer: User,
@@ -111,7 +111,7 @@ export function assignUser(
   return getCandidate(repo, viewer, candidateName);
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function getScorecards(repo: CsvRepository, viewer: User, candidateName: string): CandidateScorecards {
   const access = requireAccess(repo, viewer, candidateName);
   const hasSubmitted = Boolean(access.ownScorecard?.submitted);
@@ -126,7 +126,7 @@ export function getScorecards(repo: CsvRepository, viewer: User, candidateName: 
   return { candidate: toSummary(repo, access), scorecards };
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 /** Anonymization happens here, on the server, so hidden names never reach the client. */
 function toScorecardView(repo: CsvRepository, s: Scorecard, viewer: User, showAuthor: boolean): ScorecardView {
   const isOwn = s.userName === viewer.name;
@@ -144,7 +144,7 @@ function toScorecardView(repo: CsvRepository, s: Scorecard, viewer: User, showAu
   };
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function submitScorecard(
   repo: CsvRepository,
   viewer: User,
@@ -174,7 +174,7 @@ export function submitScorecard(
   return getScorecards(repo, viewer, candidateName);
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 function requiredString(body: Record<string, unknown>, key: string): string {
   const value = body[key];
   if (typeof value !== "string" || value.trim() === "") {
@@ -183,7 +183,7 @@ function requiredString(body: Record<string, unknown>, key: string): string {
   return value.trim();
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 /** Today's date as YYYY-MM-DD in the server's time zone (the format used in scorecards.csv). */
 function localDate(): string {
   return new Date().toLocaleDateString("en-CA");

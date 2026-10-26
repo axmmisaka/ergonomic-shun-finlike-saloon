@@ -13,18 +13,18 @@ const RATINGS = {
 describe("CsvRepository", () => {
   let dir: string;
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   beforeEach(() => {
     dir = makeTempDataDir();
   });
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   afterEach(() => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 
   // Tests: seed CSVs load into memory, including empty fields of pending rows.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("loads the seed data", () => {
     const repo = new CsvRepository(dir);
     expect(repo.listUsers().map((u) => u.name)).toEqual([
@@ -45,7 +45,7 @@ describe("CsvRepository", () => {
   // Tests: every mutation survives a fresh repository load, headers are unchanged,
   // a submission updates the assignment row instead of appending, and notes with
   // commas, quotes and newlines round-trip through the CSV.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("persists mutations and round-trips tricky notes", () => {
     const notes = 'Said "ship it", then paused.\nSecond line, with a comma.';
     const repo = new CsvRepository(dir);
@@ -73,7 +73,7 @@ describe("CsvRepository", () => {
 
   // Tests: if writing the CSV fails, the in-memory cache is not updated, the
   // original file is untouched, and no temp file is left behind.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("does not update the cache when the write fails", () => {
     const repo = new CsvRepository(dir);
     const before = readCsv(dir, "candidates.csv");
@@ -91,7 +91,7 @@ describe("CsvRepository", () => {
   });
 
   // Tests: a CSV whose columns differ from the expected schema is rejected at load.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("refuses to load a CSV with unexpected columns", () => {
     fs.writeFileSync(`${dir}/users.csv`, "name,role,email\nA,B,c@example.com\n");
     expect(() => new CsvRepository(dir)).toThrow(/users\.csv/);

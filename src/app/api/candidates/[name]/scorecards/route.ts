@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/server/session";
 
 type Context = { params: Promise<{ name: string }> };
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export async function GET(request: NextRequest, { params }: Context) {
   return withErrors(async () => {
     const repo = getRepository();
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest, { params }: Context) {
   });
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 /** Submits the *current user's* scorecard; identity fields in the body are ignored. */
 export async function POST(request: NextRequest, { params }: Context) {
   return withErrors(async () => {

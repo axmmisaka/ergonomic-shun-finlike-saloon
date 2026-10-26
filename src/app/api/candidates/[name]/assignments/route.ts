@@ -4,7 +4,7 @@ import { getRepository } from "@/server/repository";
 import { assignUser } from "@/server/scorecard-service";
 import { getCurrentUser } from "@/server/session";
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export async function POST(request: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   return withErrors(async () => {
     const repo = getRepository();

@@ -58,7 +58,7 @@ export class CsvRepository {
   private candidates: Map<string, Candidate>;
   private scorecards: Scorecard[];
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   constructor(private readonly dataDir: string) {
     this.users = new Map(
       this.readCsv("users.csv", USER_COLUMNS).map((r) => [r.name, { name: r.name, role: r.role }]),
@@ -81,45 +81,45 @@ export class CsvRepository {
     }));
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   listUsers(): User[] {
     return [...this.users.values()];
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   getUser(name: string): User | undefined {
     return this.users.get(name);
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   listCandidates(): Candidate[] {
     return [...this.candidates.values()];
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   getCandidate(name: string): Candidate | undefined {
     return this.candidates.get(name);
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   /** All rows (pending and submitted) for a candidate. */
   listScorecards(candidateName: string): Scorecard[] {
     return this.scorecards.filter((s) => s.candidateName === candidateName);
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   getScorecard(userName: string, candidateName: string): Scorecard | undefined {
     return this.scorecards.find((s) => s.userName === userName && s.candidateName === candidateName);
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   addCandidate(candidate: Candidate): void {
     const next = new Map(this.candidates).set(candidate.name, { ...candidate });
     this.writeCandidates([...next.values()]);
     this.candidates = next;
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   /** An assignment is a scorecard row with no submission date and empty ratings. */
   addAssignment(userName: string, candidateName: string): void {
     const pending: Scorecard = {
@@ -137,7 +137,7 @@ export class CsvRepository {
     this.scorecards = next;
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   /** Fills in the existing assignment row; it never appends a second row. */
   submitScorecard(userName: string, candidateName: string, submission: ScorecardSubmission): void {
     const existing = this.getScorecard(userName, candidateName);
@@ -147,7 +147,7 @@ export class CsvRepository {
     this.scorecards = next;
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   private writeCandidates(candidates: Candidate[]): void {
     this.writeCsv(
       "candidates.csv",
@@ -156,7 +156,7 @@ export class CsvRepository {
     );
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   private writeScorecards(scorecards: Scorecard[]): void {
     this.writeCsv(
       "scorecards.csv",
@@ -174,7 +174,7 @@ export class CsvRepository {
     );
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   private readCsv(file: string, expectedColumns: string[]): CsvRow[] {
     const content = fs.readFileSync(path.join(this.dataDir, file), "utf8");
     const [header = [], ...rows] = parse(content, { skip_empty_lines: true }) as string[][];
@@ -186,7 +186,7 @@ export class CsvRepository {
     );
   }
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   /** Writes to a unique temp file, then renames it over the target (atomic on POSIX). */
   private writeCsv(file: string, columns: string[], rows: CsvRow[]): void {
     const target = path.join(this.dataDir, file);

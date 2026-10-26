@@ -31,7 +31,7 @@ interface Options {
   body?: unknown;
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 function makeRequest(path: string, { as, method = "GET", body }: Options = {}): NextRequest {
   const headers = new Headers();
   if (as) headers.set("cookie", `${SESSION_COOKIE}=${encodeURIComponent(as)}`);
@@ -43,13 +43,13 @@ function makeRequest(path: string, { as, method = "GET", body }: Options = {}): 
   });
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 function params(name: string) {
   return { params: Promise.resolve({ name }) };
 }
 
 // Thin wrappers so each test reads as "user X does Y".
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 const api = {
   listCandidates: (as?: string) => candidatesRoute.GET(makeRequest("/api/candidates", { as })),
   createCandidate: (as: string, body: unknown) =>
@@ -64,7 +64,7 @@ const api = {
     scorecardsRoute.POST(makeRequest("/api/x", { as, method: "POST", body }), params(name)),
 };
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 async function candidateNames(as: string): Promise<string[]> {
   const res = await api.listCandidates(as);
   expect(res.status).toBe(200);
@@ -74,14 +74,14 @@ async function candidateNames(as: string): Promise<string[]> {
 describe("API", () => {
   let dir: string;
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   beforeEach(() => {
     dir = makeTempDataDir();
     process.env.DATA_DIR = dir;
     resetRepository();
   });
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   afterEach(() => {
     fs.rmSync(dir, { recursive: true, force: true });
     delete process.env.DATA_DIR;
@@ -90,7 +90,7 @@ describe("API", () => {
 
   // Tests: no session -> 401; "logging in" sets a cookie that identifies the
   // user; unknown users cannot log in; the user list is available for the dropdown.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("resolves the current user only from the session cookie", async () => {
     expect((await api.listCandidates()).status).toBe(401);
     expect((await sessionRoute.GET(makeRequest("/api/session"))).status).toBe(401);
@@ -116,7 +116,7 @@ describe("API", () => {
 
   // Tests: identity fields in a request body are ignored; the session user is
   // the one whose scorecard is submitted.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("ignores identity supplied in the request body", async () => {
     const res = await api.submit("Sam Okonkwo", "Noah Patel", {
       ...VALID_SCORECARD,
@@ -131,7 +131,7 @@ describe("API", () => {
 
   // Tests: each user sees exactly the candidates they manage or are assigned
   // to; unrelated users get 404 on direct API access to a candidate.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("shows candidates only to their hiring manager and assignees", async () => {
     expect(await candidateNames("Avery Lin")).toEqual([
       "Chris Adeyemi",
@@ -150,7 +150,7 @@ describe("API", () => {
 
   // Tests: hiring-manager status comes from candidates.hiring_manager, not from
   // the user's job title (Jordan is a "Senior Engineer").
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("treats the candidate's hiring_manager as manager regardless of job title", async () => {
     const res = await api.getCandidate("Jordan Hale", "Mina Alvarez");
     const mina = (await res.json()) as CandidateSummary;
@@ -164,7 +164,7 @@ describe("API", () => {
 
   // Tests: creating a candidate makes the creator the hiring manager and
   // persists to candidates.csv; duplicates and blank fields are rejected.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("creates candidates with the current user as hiring manager", async () => {
     const res = await api.createCandidate("Sam Okonkwo", {
       name: "  Taylor Brooks ",
@@ -208,7 +208,7 @@ describe("API", () => {
 
   // Tests: an assignee submits once, which fills in their existing row; a second
   // submission, an unassigned manager, and an unrelated user are rejected.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("accepts exactly one scorecard from an assigned user", async () => {
     const rowCount = () => readCsv(dir, "scorecards.csv").trim().split("\n").length;
     const before = rowCount();
@@ -225,7 +225,7 @@ describe("API", () => {
   });
 
   // Tests: an assignee who has not submitted cannot read anyone's scorecards.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("hides scorecards from an assignee until they submit", async () => {
     await api.assign("Avery Lin", "Elena Voss", { userName: "Sam Okonkwo" });
     const res = await api.getScorecards("Sam Okonkwo", "Elena Voss");
@@ -236,7 +236,7 @@ describe("API", () => {
   // Tests: after submitting, an assignee sees all submitted scorecards, their own
   // labelled as theirs, with no other author's name or role anywhere in the
   // response, and no assignee list on the candidate.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("anonymizes other authors for an assignee who has submitted", async () => {
     const res = await api.getScorecards("Avery Lin", "Chris Adeyemi");
     expect(res.status).toBe(200);
@@ -255,7 +255,7 @@ describe("API", () => {
 
   // Tests: the hiring manager sees named scorecards without submitting one, and
   // pending assignments are not shown as scorecards.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("shows named scorecards to the hiring manager", async () => {
     const chris = (await (await api.getScorecards("Riley Chen", "Chris Adeyemi")).json()) as CandidateScorecards;
     expect(chris.scorecards.map((s) => [s.author, s.authorRole]).sort()).toEqual([
@@ -272,7 +272,7 @@ describe("API", () => {
 
   // Tests: a hiring manager who assigns themselves keeps full named access
   // before submitting, and can also submit their own scorecard once.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("combines manager and assignee permissions", async () => {
     expect((await api.assign("Avery Lin", "Elena Voss", { userName: "Avery Lin" })).status).toBe(201);
 
@@ -288,7 +288,7 @@ describe("API", () => {
 
   // Tests: invalid or missing ratings, wrong types, malformed JSON, and unknown
   // candidates are rejected without writing anything.
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   it("validates scorecard submissions", async () => {
     const before = readCsv(dir, "scorecards.csv");
     const { communication: _omitted, ...missingField } = VALID_SCORECARD;

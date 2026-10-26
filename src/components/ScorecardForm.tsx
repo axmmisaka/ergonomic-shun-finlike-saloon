@@ -13,7 +13,7 @@ interface Props {
   onSubmitted: () => void;
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function ScorecardForm({ candidateName, onSubmitted }: Props) {
   const [candidate, setCandidate] = useState<CandidateSummary | null>(null);
   const [ratings, setRatings] = useState<Partial<Record<RatingField, Rating>>>({});
@@ -26,7 +26,7 @@ export function ScorecardForm({ candidateName, onSubmitted }: Props) {
     api.getCandidate(candidateName).then(setCandidate, (e) => setLoadError(errorMessage(e)));
   }, [candidateName]);
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     const missing = FIELDS.filter(([field]) => !ratings[field]).map(([, label]) => label);

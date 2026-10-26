@@ -10,7 +10,7 @@ import type {
 // anything from src/server.
 
 export class ApiRequestError extends Error {
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   constructor(
     readonly status: number,
     message: string,
@@ -19,7 +19,7 @@ export class ApiRequestError extends Error {
   }
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 async function request<T>(path: string, method = "GET", body?: unknown): Promise<T> {
   const response = await fetch(path, {
     method,
@@ -33,7 +33,7 @@ async function request<T>(path: string, method = "GET", body?: unknown): Promise
   return data as T;
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 const candidatePath = (name: string) => `/api/candidates/${encodeURIComponent(name)}`;
 
 export const api = {
@@ -51,7 +51,7 @@ export const api = {
     request<CandidateScorecards>(`${candidatePath(name)}/scorecards`, "POST", input),
 };
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Something went wrong";
 }

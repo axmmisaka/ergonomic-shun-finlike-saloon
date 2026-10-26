@@ -4,7 +4,7 @@ import path from "node:path";
 
 const SEED_DIR = path.resolve(import.meta.dirname, "../../data");
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 /** Copies the seed CSVs into a fresh temp directory so tests never touch data/. */
 export function makeTempDataDir(): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "scorecards-test-"));
@@ -14,12 +14,12 @@ export function makeTempDataDir(): string {
   return dir;
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function readCsv(dir: string, file: string): string {
   return fs.readFileSync(path.join(dir, file), "utf8");
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function readSeedCsv(file: string): string {
   return fs.readFileSync(path.join(SEED_DIR, file), "utf8");
 }

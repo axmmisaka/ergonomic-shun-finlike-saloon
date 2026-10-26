@@ -1,7 +1,7 @@
 // HTTP plumbing shared by all Route Handlers: typed errors -> JSON responses.
 
 export class HttpError extends Error {
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   constructor(
     readonly status: number,
     message: string,
@@ -10,7 +10,7 @@ export class HttpError extends Error {
   }
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 /** Runs a handler and converts thrown HttpErrors into `{ error }` JSON responses. */
 export async function withErrors(handler: () => Response | Promise<Response>): Promise<Response> {
   try {
@@ -24,7 +24,7 @@ export async function withErrors(handler: () => Response | Promise<Response>): P
   }
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 /** Parses a JSON object body; anything else is a 400. */
 export async function readJsonObject(request: Request): Promise<Record<string, unknown>> {
   let body: unknown;

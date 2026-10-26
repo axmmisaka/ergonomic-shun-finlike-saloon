@@ -4,7 +4,7 @@ import { getRepository } from "@/server/repository";
 import { createCandidate, listVisibleCandidates } from "@/server/scorecard-service";
 import { getCurrentUser } from "@/server/session";
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export async function GET(request: NextRequest) {
   return withErrors(() => {
     const repo = getRepository();
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export async function POST(request: NextRequest) {
   return withErrors(async () => {
     const repo = getRepository();

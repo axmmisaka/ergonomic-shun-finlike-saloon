@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = { title: "Scorecards" };
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">

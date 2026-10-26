@@ -14,7 +14,7 @@ import { HttpError } from "./http";
 
 export const SESSION_COOKIE = "scorecards_user";
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function getCurrentUser(request: NextRequest, repo: CsvRepository): User {
   const name = request.cookies.get(SESSION_COOKIE)?.value;
   const user = name ? repo.getUser(name) : undefined;

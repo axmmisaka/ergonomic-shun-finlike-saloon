@@ -1,6 +1,6 @@
 import { CandidatesPage } from "@/components/CandidatesPage";
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export default function HomePage() {
   return <CandidatesPage />;
 }

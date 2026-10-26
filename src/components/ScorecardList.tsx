@@ -10,7 +10,7 @@ const FIELDS = Object.entries(RATING_FIELDS) as [RatingField, string][];
 // The CSV stores plain dates; format them in UTC so the day never shifts with the browser's time zone.
 const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" });
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function ScorecardList({ candidateName }: { candidateName: string }) {
   const [data, setData] = useState<CandidateScorecards | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export function ScorecardList({ candidateName }: { candidateName: string }) {
   );
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 function ScorecardCard({ scorecard: s }: { scorecard: ScorecardView }) {
   const title = s.isOwn ? "You" : (s.author ?? "Interviewer");
   const subtitle = [s.isOwn ? "Your scorecard" : s.authorRole, dateFormat.format(new Date(s.submitted))]

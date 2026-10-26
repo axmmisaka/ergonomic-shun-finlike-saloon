@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { api, errorMessage } from "@/client/api";
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function AddCandidateForm({ onCreated }: { onCreated: () => void }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -11,7 +11,7 @@ export function AddCandidateForm({ onCreated }: { onCreated: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setSaving(true);

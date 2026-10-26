@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { api, errorMessage } from "@/client/api";
 import type { CandidateSummary, User } from "@/lib/types";
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function AssignForm({ candidate, onAssigned }: { candidate: CandidateSummary; onAssigned: () => void }) {
   const [users, setUsers] = useState<User[]>([]);
   const [userName, setUserName] = useState("");
@@ -18,7 +18,7 @@ export function AssignForm({ candidate, onAssigned }: { candidate: CandidateSumm
   const alreadyAssigned = new Set((candidate.assignees ?? []).map((a) => a.name));
   const available = users.filter((u) => !alreadyAssigned.has(u.name));
 
-  // Authored by LLM, model Claude Opus 5.5
+  // Authored by LLM, model unknown
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setSaving(true);

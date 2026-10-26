@@ -10,7 +10,7 @@ import { CsvRepository } from "./csv-repository";
 
 const globalForRepo = globalThis as typeof globalThis & { scorecardRepository?: CsvRepository };
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 export function getRepository(): CsvRepository {
   globalForRepo.scorecardRepository ??= new CsvRepository(
     process.env.DATA_DIR ?? path.join(process.cwd(), "data"),
@@ -18,7 +18,7 @@ export function getRepository(): CsvRepository {
   return globalForRepo.scorecardRepository;
 }
 
-// Authored by LLM, model Claude Opus 5.5
+// Authored by LLM, model unknown
 /** Test seam: forget the cached repository so the next call re-reads DATA_DIR. */
 export function resetRepository(): void {
   globalForRepo.scorecardRepository = undefined;
