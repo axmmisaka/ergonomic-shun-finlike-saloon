@@ -185,6 +185,18 @@ describe("API", () => {
     expect((await api.createCandidate("Sam Okonkwo", { name: "New Person" })).status).toBe(400);
   });
 
+  // Authored by LLM, model GPT-6
+  it("rejects dot-segment candidate names without persisting unreachable candidates", async () => {
+    const before = readCsv(dir, "candidates.csv");
+    for (const name of [".", " .. "]) {
+      const response = await api.createCandidate("Sam Okonkwo", { name, role: "SRE" });
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({ error: 'Candidate name cannot be "." or ".."' });
+    }
+    expect(readCsv(dir, "candidates.csv")).toBe(before);
+    expect((await api.createCandidate("Sam Okonkwo", { name: "Dr. Taylor", role: "SRE" })).status).toBe(201);
+  });
+
   // Tests: managers and assignees can assign; invalid and duplicate targets fail.
   // Edited by LLM, model GPT-6
   it("lets users assign interviewers to candidates they can access", async () => {

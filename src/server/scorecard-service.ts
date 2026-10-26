@@ -45,7 +45,7 @@ function requireAccess(repo: CsvRepository, viewer: User, candidateName: string)
   return access;
 }
 
-// Authored by LLM, model unknown
+// Edited by LLM, model GPT-6
 function toSummary(repo: CsvRepository, { candidate, isHiringManager, ownScorecard }: Access): CandidateSummary {
   return {
     name: candidate.name,
@@ -54,9 +54,8 @@ function toSummary(repo: CsvRepository, { candidate, isHiringManager, ownScoreca
     isHiringManager,
     isAssigned: Boolean(ownScorecard),
     hasSubmitted: Boolean(ownScorecard?.submitted),
-    // Only the hiring manager sees the other interviewers. Showing this list to
-    // assignees would undo the author anonymization (with two assignees, the
-    // "anonymous" author would be obvious).
+    // Avoid exposing the full roster to assignees. Assignment feedback can still
+    // reveal membership under the agreed policy; this is not strong anonymity.
     assignees: isHiringManager
       ? repo.listScorecards(candidate.name).map((s) => ({ name: s.userName, submitted: Boolean(s.submitted) }))
       : null,
@@ -77,13 +76,15 @@ export function getCandidate(repo: CsvRepository, viewer: User, candidateName: s
   return toSummary(repo, requireAccess(repo, viewer, candidateName));
 }
 
-// Authored by LLM, model unknown
+// Edited by LLM, model GPT-6
 export function createCandidate(
   repo: CsvRepository,
   viewer: User,
   body: Record<string, unknown>,
 ): CandidateSummary {
   const name = requiredString(body, "name");
+  // URL parsers normalize these entire path segments, making name-keyed links unusable.
+  if (name === "." || name === "..") throw new HttpError(400, 'Candidate name cannot be "." or ".."');
   const role = requiredString(body, "role");
   const taken = repo.listCandidates().some((c) => c.name.toLowerCase() === name.toLowerCase());
   if (taken) throw new HttpError(409, `A candidate named "${name}" already exists`);
@@ -127,7 +128,7 @@ export function getScorecards(repo: CsvRepository, viewer: User, candidateName: 
 }
 
 // Authored by LLM, model unknown
-/** Anonymization happens here, on the server, so hidden names never reach the client. */
+/** Mask structured author fields on the server; free-text notes can still identify people. */
 function toScorecardView(repo: CsvRepository, s: Scorecard, viewer: User, showAuthor: boolean): ScorecardView {
   const isOwn = s.userName === viewer.name;
   const revealed = showAuthor || isOwn;

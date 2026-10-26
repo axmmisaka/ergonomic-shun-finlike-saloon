@@ -5,7 +5,7 @@ This log records the decisions that matter for review: what was chosen, what els
 **Origin** tells you where each decision came from:
 - **Spec**: required by the assignment.
 - **Developer**: decided by the developer before implementation started.
-- **Agent**: an implementation choice made by the AI coding agent while building; this label does not imply developer review or approval.
+- **Agent**: an implementation choice made during AI-assisted development.
 
 ---
 
@@ -120,6 +120,15 @@ This log records the decisions that matter for review: what was chosen, what els
 - **Consequences:** Components own loading/error states and refetch after mutations. Switching users unmounts the page while the cookie changes and remounts it for the new identity, deliberately discarding unsaved form state. The selector is disabled during a switch to avoid competing session writes. Candidate detail components are keyed by name to discard stale form state when navigating between candidates.
 - **Origin:** Developer (REST architecture and simplicity). Agent (component state and reset behavior).
 
+## D12. Reject malformed paths before dynamic route matching
+
+- **Decision:** A small `src/proxy.ts`, scoped to candidate pages and APIs, validates percent-encoding and returns JSON 400 for malformed paths. Valid paths pass through unchanged. Client pages also handle a malformed parameter without throwing during render.
+- **Context:** A live production request to `/candidates/100%/scorecards` returned 500 even after guarding the component decoder: this framework version can fail before the page renders.
+- **Alternatives:** A component-only try/catch protects rendering but did not fix the reproduced HTTP failure. A framework upgrade would be a larger, unverified change for this take-home.
+- **Rationale:** The early guard fixes the observed boundary failure without dependencies or a routing abstraction. See [Next.js Proxy execution order](https://nextjs.org/docs/app/api-reference/file-conventions/proxy#execution-order).
+- **Consequences:** Invalid page URLs return a plain JSON error; this is deliberately minimal. Client `useParams` values in the installed version still require a single decode, while API Route Handler params are already decoded. Do not silently fall back to treating malformed encoding as a different candidate name.
+- **Origin:** Agent, verified by production HTTP/browser reproduction and regression tests.
+
 ---
 
 # Specification ambiguities and conflicts
@@ -153,7 +162,7 @@ Precedence used: the **written spec** decides behaviour, the **CSV schema** deci
 
 ## A4. Validation rules the spec does not define
 
-- **Candidate:** `name` and `role` are required, and leading and trailing whitespace is trimmed. Names must be unique case-insensitively, because names are the keys (D3). `hiring_manager` is always the current user. A value in the request body is ignored.
+- **Candidate:** `name` and `role` are required, and leading and trailing whitespace is trimmed. Names must be unique case-insensitively, because names are the keys (D3). Lookups and generated links use the exact stored spelling; uniqueness checking does not create case-insensitive URL aliases. The complete names `.` and `..` are rejected because URL parsers normalize those path segments; ordinary names containing periods remain valid. `hiring_manager` is always the current user. A value in the request body is ignored.
 - **Assignment:** The target must be an existing user. A duplicate assignment returns 409.
 - **Scorecard:** All four ratings are required and must be one of `Developing`, `Solid`, `Strong`, `Exceptional`. That vocabulary comes from the screenshot and is consistent with the CSV values. `notes` is optional free text, trimmed, and may contain commas, quotes, or newlines. `submitted` is set by the server to today's date (`YYYY-MM-DD`, server time zone). The client cannot backdate it.
 - **Origin:** Agent (specific rules). Developer (rating vocabulary must match the existing data).
