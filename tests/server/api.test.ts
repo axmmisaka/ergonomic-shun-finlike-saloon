@@ -185,10 +185,9 @@ describe("API", () => {
     expect((await api.createCandidate("Sam Okonkwo", { name: "New Person" })).status).toBe(400);
   });
 
-  // Tests: the hiring manager can assign an existing user (one pending row);
-  // duplicates, unknown users, and non-managers are rejected.
-  // Authored by LLM, model Claude Opus 5.5
-  it("lets the hiring manager assign users", async () => {
+  // Tests: managers and assignees can assign; invalid and duplicate targets fail.
+  // Edited by LLM, model GPT-6
+  it("lets users assign interviewers to candidates they can access", async () => {
     const res = await api.assign("Avery Lin", "Noah Patel", { userName: "Priya Shah" });
     expect(res.status).toBe(201);
     expect(readCsv(dir, "scorecards.csv")).toContain("Priya Shah,Noah Patel,,,,,,");
@@ -198,10 +197,13 @@ describe("API", () => {
     expect((await api.assign("Avery Lin", "Noah Patel", { userName: "Nobody" })).status).toBe(400);
     expect((await api.assign("Avery Lin", "Noah Patel", {})).status).toBe(400);
     // Sam is assigned to Noah but is not the hiring manager.
-    expect((await api.assign("Sam Okonkwo", "Noah Patel", { userName: "Jordan Hale" })).status).toBe(403);
+    const assigned = await api.assign("Sam Okonkwo", "Noah Patel", { userName: "Jordan Hale" });
+    expect(assigned.status).toBe(201);
+    expect((await assigned.json()).assignees).toBeNull();
+    expect(await candidateNames("Jordan Hale")).toContain("Noah Patel");
 
     const rows = readCsv(dir, "scorecards.csv").split("\n").filter((l) => l.includes(",Noah Patel,"));
-    expect(rows).toHaveLength(2); // Sam's original row + Priya's new one
+    expect(rows).toHaveLength(3); // Sam's original row + Priya and Jordan
   });
 
   // Tests: an assignee submits once, which fills in their existing row; a second

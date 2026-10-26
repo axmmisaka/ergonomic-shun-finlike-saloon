@@ -92,18 +92,15 @@ export function createCandidate(
   return getCandidate(repo, viewer, name);
 }
 
-// Authored by LLM, model Claude Opus 5.5
-/** Only the hiring manager may assign interviewers (see DECISIONS.md, "Who can assign"). */
+// Edited by LLM, model GPT-6
+/** Anyone who can access the candidate may assign (see DECISIONS.md, A2). */
 export function assignUser(
   repo: CsvRepository,
   viewer: User,
   candidateName: string,
   body: Record<string, unknown>,
 ): CandidateSummary {
-  const access = requireAccess(repo, viewer, candidateName);
-  if (!access.isHiringManager) {
-    throw new HttpError(403, "Only the hiring manager can assign interviewers");
-  }
+  requireAccess(repo, viewer, candidateName);
   const userName = requiredString(body, "userName");
   if (!repo.getUser(userName)) throw new HttpError(400, `Unknown user "${userName}"`);
   if (repo.getScorecard(userName, candidateName)) {
