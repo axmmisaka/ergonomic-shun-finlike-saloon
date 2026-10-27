@@ -94,13 +94,13 @@ This log records the decisions that matter for review: what was chosen, what els
 ## D9. Testing approach
 
 - **Decision:** There are two independent Vitest projects.
-  - `server` calls the real Route Handler exports with real `Request` objects (cookies, JSON bodies, route params) against a temp copy of the seed CSVs. It covers HTTP status codes, authorization, validation, and what ends up on disk.
+  - `server` calls the real Route Handler exports with real `Request` objects (cookies, JSON bodies, route params) against a temp copy of the original seed CSVs stored in `tests/fixtures/`. It covers HTTP status codes, authorization, validation, and what ends up on disk.
   - `client` renders React components in jsdom with `fetch` stubbed.
   - There is no maintained browser E2E suite. A one-off Chromium smoke walkthrough checks the assembled application.
 - **Context:** The agreed plan calls for independent API and component suites with a brief browser smoke check.
 - **Consequences:** Mocks cannot prove framework integration; the browser walkthrough covers cookies, real routing and rendering.
 - **Alternatives:** (a) Start `next dev` and test over real sockets. Slower, flakier, and it adds process management to the tests. (b) Unit-test the service directly. This would miss cookie, JSON, and status-code behaviour.
-- **Rationale:** Calling handlers in-process exercises everything except Next's router, which is framework code. Each test gets a fresh temp data dir via the `DATA_DIR` env var and a `resetRepository()` test seam. The seed data is never mutated.
+- **Rationale:** Calling handlers in-process exercises everything except Next's router, which is framework code. Each test gets a fresh temp data dir via the `DATA_DIR` env var and a `resetRepository()` test seam. The fixtures are never mutated; edits to the application’s live `data/` files do not affect tests.
 - **Origin:** Developer (two suites, no E2E). Agent (in-process handler calls, `DATA_DIR` seam).
 
 ## D10. One repository instance per process, stored on `globalThis`
@@ -151,19 +151,22 @@ Precedence used: the **written spec** decides behaviour, the **CSV schema** deci
 3. **Ambiguity:** Read literally, any user could assign anyone to any candidate.
 4. **Implemented:** Any user who can access the candidate (manager or assignee) can assign existing users. Unrelated users receive 404. Both candidate lists expose Assign.
 5. **Why:** This follows the developer's explicit pre-implementation instruction and the broader written requirement. The screenshot's manager-only button is a visual reference, not an authorization rule. The initial implementation narrowed this to managers; it was corrected with an API regression test.
-- **Consequences:** Assignees can expand candidate access. Only managers receive an assignee roster; others select from all users and may receive a duplicate-assignment error. That error can reveal whether a known user is assigned, so this is author masking, not strong anonymity. Restrict assignment to managers only if the product requirement changes.
+- **Consequences:** Assignees can expand candidate access. Only managers receive an assignee roster; others select from users other than themselves and may receive a duplicate-assignment error. That error can reveal whether a known user is assigned, so this is author masking, not strong anonymity. Restrict assignment to managers only if the product requirement changes.
 - **Origin:** Developer (access-based assignment policy). Agent (UI and duplicate-feedback behavior).
 
-## A3. Can the hiring manager assign themselves?
+## A3. Assign only other users
 
-1. **Written spec:** "assign *other* Users", but the spec also implies a user can be both manager and assignee.
-2. **Implemented:** Allowed. A hiring manager often interviews too, and this is the only way the "manager and assignee" case can come about through the UI.
-- **Origin:** Agent.
+1. **Written spec:** "Users can assign other Users to a Candidate" excludes the acting user, including a hiring manager.
+2. **Implemented:** The service rejects a target equal to the resolved session user with HTTP 400. The assignment form loads the session and omits the current user from its options. Both managers and assignees may still assign other users to candidates they can access.
+3. **Combined permissions:** Another existing assignee can assign the hiring manager. The manager can then submit once and keeps named feedback access before and after submission.
+4. **Why:** The earlier claim that self-assignment was the only way to exercise combined permissions was incorrect. Supporting two roles does not require self-assignment. For a new candidate, the manager first assigns a colleague; that colleague can assign the manager.
+5. **Consequences:** Existing assignment rows are retained: the schema does not record who created them, so they cannot be classified as historical self-assignments. This change governs new assignment requests, not existing reviewer permissions.
+- **Origin:** Spec wording; developer correction confirmed 2026-10-27. Supersedes the earlier agent interpretation allowing self-assignment.
 
 ## A4. Validation rules the spec does not define
 
 - **Candidate:** `name` and `role` are required, and leading and trailing whitespace is trimmed. Names must be unique case-insensitively, because names are the keys (D3). Lookups and generated links use the exact stored spelling; uniqueness checking does not create case-insensitive URL aliases. The complete names `.` and `..` are rejected because URL parsers normalize those path segments; ordinary names containing periods remain valid. `hiring_manager` is always the current user. A value in the request body is ignored.
-- **Assignment:** The target must be an existing user. A duplicate assignment returns 409.
+- **Assignment:** The target must be an existing user other than the session user. Self-assignment returns 400; a duplicate assignment of another user returns 409.
 - **Scorecard:** All four ratings are required and must be one of `Developing`, `Solid`, `Strong`, `Exceptional`. That vocabulary comes from the screenshot and is consistent with the CSV values. `notes` is optional free text, trimmed, and may contain commas, quotes, or newlines. `submitted` is set by the server to today's date (`YYYY-MM-DD`, server time zone). The client cannot backdate it.
 - **Origin:** Agent (specific rules). Developer (rating vocabulary must match the existing data).
 

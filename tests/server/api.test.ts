@@ -218,6 +218,17 @@ describe("API", () => {
     expect(rows).toHaveLength(3); // Sam's original row + Priya and Jordan
   });
 
+  // Authored by LLM, model GPT-6
+  it("rejects assigning the session user to themselves without changing persistence", async () => {
+    const before = readCsv(dir, "scorecards.csv");
+    for (const as of ["Avery Lin", "Jordan Hale"]) {
+      const response = await api.assign(as, "Elena Voss", { userName: as });
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({ error: "You can only assign other users" });
+    }
+    expect(readCsv(dir, "scorecards.csv")).toBe(before);
+  });
+
   // Tests: an assignee submits once, which fills in their existing row; a second
   // submission, an unassigned manager, and an unrelated user are rejected.
   // Authored by LLM, model unknown
@@ -282,11 +293,11 @@ describe("API", () => {
     expect(noahAfter.scorecards.map((s) => s.author)).toEqual(["Sam Okonkwo"]);
   });
 
-  // Tests: a hiring manager who assigns themselves keeps full named access
+  // Tests: a hiring manager assigned by another interviewer keeps full named access
   // before submitting, and can also submit their own scorecard once.
-  // Authored by LLM, model unknown
+  // Edited by LLM, model GPT-6
   it("combines manager and assignee permissions", async () => {
-    expect((await api.assign("Avery Lin", "Elena Voss", { userName: "Avery Lin" })).status).toBe(201);
+    expect((await api.assign("Jordan Hale", "Elena Voss", { userName: "Avery Lin" })).status).toBe(201);
 
     const before = (await (await api.getScorecards("Avery Lin", "Elena Voss")).json()) as CandidateScorecards;
     expect(before.candidate).toMatchObject({ isHiringManager: true, isAssigned: true, hasSubmitted: false });

@@ -4,19 +4,29 @@ import { useEffect, useState, type FormEvent } from "react";
 import { api, errorMessage } from "@/client/api";
 import type { CandidateSummary, User } from "@/lib/types";
 
-// Authored by LLM, model unknown
+// Edited by LLM, model GPT-6
 export function AssignForm({ candidate, onAssigned }: { candidate: CandidateSummary; onAssigned: () => void }) {
   const [users, setUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userName, setUserName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  // Edited by LLM, model GPT-6
   useEffect(() => {
-    api.listUsers().then(setUsers, (e) => setError(errorMessage(e)));
+    Promise.all([api.listUsers(), api.getSession()]).then(
+      // Authored by LLM, model GPT-6
+      ([users, viewer]) => {
+        setUsers(users);
+        setCurrentUser(viewer);
+      },
+      // Authored by LLM, model GPT-6
+      (e) => setError(errorMessage(e)),
+    );
   }, []);
 
   const alreadyAssigned = new Set((candidate.assignees ?? []).map((a) => a.name));
-  const available = users.filter((u) => !alreadyAssigned.has(u.name));
+  const available = users.filter(/* Edited by LLM, model GPT-6 */ (u) => u.name !== currentUser?.name && !alreadyAssigned.has(u.name));
 
   // Authored by LLM, model unknown
   async function handleSubmit(event: FormEvent) {

@@ -21,7 +21,7 @@ export function CandidatesPage() {
   if (error) return <p role="alert">{error}</p>;
   if (!candidates) return <p>Loading candidates…</p>;
 
-  // A candidate can appear in both lists if the manager also assigned themselves.
+  // A candidate appears in both lists when another interviewer has assigned the manager.
   const managed = candidates.filter((c) => c.isHiringManager);
   const assigned = candidates.filter((c) => c.isAssigned);
 

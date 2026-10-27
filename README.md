@@ -13,7 +13,7 @@ npm run dev
 
 Open http://localhost:3000 and choose a user in the dropdown. For a production build, run `npm run build` followed by `npm start`.
 
-The default data directory is `./data`, and actions persist there. To explore without modifying those files, copy the three CSVs to a temporary directory and set `DATA_DIR` to its absolute path **before starting the server**. Restart after changing CSVs outside the app. Tests always use temporary copies.
+The default data directory is `./data`, and actions persist there. To explore without modifying those files, copy the three CSVs to a temporary directory and set `DATA_DIR` to its absolute path **before starting the server**. Restart after changing CSVs outside the app. Tests always use temporary copies of the original seeds in `tests/fixtures/`, independently of edits to live `data/`.
 
 A quick tour with the supplied data:
 
@@ -39,7 +39,7 @@ See [TESTING.md](docs/TESTING.md) for what each scenario verifies, actual result
 
 Client components import shared contracts and a small fetch client. Authorization and author masking happen on the server. A dropdown sets an unsigned HTTP-only mock-session cookie; this is deliberately **not real authentication**.
 
-Names are persistent keys. Creating a candidate makes the current user its manager. Managers and assignees can assign existing users. An assignment is a pending scorecard row; submitting fills that row once. Managers see named submitted scorecards immediately. Other assignees must submit first and receive other authors as `null`.
+Names are persistent keys. Creating a candidate makes the current user its manager. Managers and assignees can assign other existing users; self-assignment is rejected. Another assignee can assign the manager, preserving combined manager/interviewer permissions. An assignment is a pending scorecard row; submitting fills that row once. Managers see named submitted scorecards immediately. Other assignees must submit first and receive other authors as `null`.
 
 Persistence uses an in-memory cache and synchronous, atomic file replacement, updating the cache only after a successful write. Run **one Node process on a persistent writable filesystem**: rewrites are O(N), block the event loop, do not notice external edits, and are not safe across processes. This is unsuitable for ephemeral/serverless storage. No `fsync` power-loss guarantee is claimed.
 

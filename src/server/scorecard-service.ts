@@ -103,6 +103,7 @@ export function assignUser(
 ): CandidateSummary {
   requireAccess(repo, viewer, candidateName);
   const userName = requiredString(body, "userName");
+  if (userName === viewer.name) throw new HttpError(400, "You can only assign other users");
   if (!repo.getUser(userName)) throw new HttpError(400, `Unknown user "${userName}"`);
   if (repo.getScorecard(userName, candidateName)) {
     throw new HttpError(409, `${userName} is already assigned to ${candidateName}`);

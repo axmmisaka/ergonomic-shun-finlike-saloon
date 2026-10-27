@@ -1,6 +1,7 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
+import { AssignForm } from "@/components/AssignForm";
 import { AppShell } from "@/components/AppShell";
 import { CandidatesPage } from "@/components/CandidatesPage";
 import { ScorecardForm } from "@/components/ScorecardForm";
@@ -67,13 +68,14 @@ it("selects users, reloads their candidates, and hides actions while switching",
 });
 
 // Creation refreshes the list; an assignee can assign, with failures shown in context.
-// Authored by LLM, model GPT-6
+// Edited by LLM, model GPT-6
 it("creates a candidate and lets an assignee assign with useful duplicate feedback", async () => {
   let candidates = [pending];
-  // Authored by LLM, model GPT-6
+  // Edited by LLM, model GPT-6
   const fetchMock = mockFetch((url, init) => {
     if (url === "/api/users") return json(users);
-    if (url.endsWith("/assignments")) return json({ error: "Sam Okonkwo is already assigned to Noah Patel" }, 409);
+    if (url === "/api/session") return json(users[1]);
+    if (url.endsWith("/assignments")) return json({ error: "Avery Lin is already assigned to Noah Patel" }, 409);
     if (url === "/api/candidates" && init.method === "POST") {
       const body = JSON.parse(init.body as string);
       candidates = [...candidates, { ...managed, ...body }];
@@ -96,11 +98,11 @@ it("creates a candidate and lets an assignee assign with useful duplicate feedba
   const card = within(screen.getByRole("listitem", { name: "Noah Patel" }));
   await user.click(card.getByRole("button", { name: "Assign" }));
   const form = within(card.getByRole("form", { name: "Assign interviewer to Noah Patel" }));
-  await user.selectOptions(await form.findByRole("combobox"), "Sam Okonkwo");
+  await user.selectOptions(await form.findByRole("combobox"), "Avery Lin");
   await user.click(form.getByRole("button", { name: "Assign" }));
   expect(await form.findByRole("alert")).toHaveTextContent("already assigned");
   expect(fetchMock).toHaveBeenCalledWith("/api/candidates/Noah%20Patel/assignments", expect.objectContaining({
-    method: "POST", body: JSON.stringify({ userName: "Sam Okonkwo" }),
+    method: "POST", body: JSON.stringify({ userName: "Avery Lin" }),
   }));
 });
 
@@ -174,4 +176,17 @@ it("explains existing named access when a hiring manager submits their own score
   expect(await screen.findByText(/You can already read all submitted scorecards with author names/)).toBeVisible();
   expect(screen.getByText(/You are the hiring manager/)).toBeVisible();
   expect(screen.queryByText(/After you submit, you can read the others with the author hidden/)).not.toBeInTheDocument();
+});
+
+// Authored by LLM, model GPT-6
+it.each([
+  { candidate: { ...managed, assignees: [] }, currentUser: users[0] },
+  { candidate: pending, currentUser: users[1] },
+])("offers only other users for assignment (%#)", async ({ candidate, currentUser }) => {
+  // Authored by LLM, model GPT-6
+  mockFetch((url) => json(url === "/api/session" ? currentUser : users));
+  render(<AssignForm candidate={candidate} onAssigned={vi.fn()} />);
+  const other = users.find(/* Authored by LLM, model GPT-6 */ (u) => u.name !== currentUser.name)!;
+  expect(await screen.findByRole("option", { name: `${other.name} (${other.role})` })).toBeInTheDocument();
+  expect(screen.queryByRole("option", { name: `${currentUser.name} (${currentUser.role})` })).not.toBeInTheDocument();
 });
