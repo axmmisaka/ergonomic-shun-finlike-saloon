@@ -1,0 +1,7 @@
+user_name,candidate_name,submitted,technical_skill,communication,collaboration,role_fit,notes
+Jordan Hale,Elena Voss,2026-10-02,Exceptional,Strong,Exceptional,Exceptional,Elena traced a replication-lag incident from the symptom to a missing index without being led there. I would trust her with the ingest pipeline.
+Priya Shah,Elena Voss,2026-10-03,Exceptional,Exceptional,Strong,Strong,"Clear failure-mode writeup and calm under a vague prompt. Her answer on API versioning stayed fuzzy, so I would not hand her the public API alone yet."
+Sam Okonkwo,Noah Patel,,,,,,
+Avery Lin,Mina Alvarez,,,,,,
+Avery Lin,Chris Adeyemi,2026-09-28,Exceptional,Solid,Strong,Strong,Chris was methodical about the warehouse cost model and caught a bad join I had missed. He was light on how he would explain that cost to a stakeholder.
+Priya Shah,Chris Adeyemi,2026-09-29,Exceptional,Strong,Exceptional,Exceptional,I would hire Chris for the data platform seat. He scoped the backfill without drama and named the risk if we slip the partition change.

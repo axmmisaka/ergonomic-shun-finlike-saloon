@@ -2,10 +2,10 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-const SEED_DIR = path.resolve(import.meta.dirname, "../../data");
+const SEED_DIR = path.resolve(import.meta.dirname, "../fixtures");
 
 // Authored by LLM, model unknown
-/** Copies the seed CSVs into a fresh temp directory so tests never touch data/. */
+/** Copies the seed CSVs into a fresh temp directory so tests never depend on or mutate the live data/. */
 export function makeTempDataDir(): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "scorecards-test-"));
   for (const file of ["users.csv", "candidates.csv", "scorecards.csv"]) {
